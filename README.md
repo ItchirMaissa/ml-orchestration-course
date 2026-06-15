@@ -13,18 +13,65 @@ Prédire cette cible est utile pour aider les médecins à identifier rapidement
 
 - **Source** : Heart Disease UCI (Kaggle)
 - **Fichier** : `data/heart_disease_uci.csv`
-- **Colonne cible** : `num` (convertie en binaire : 0 / 1)
+- **Colonne cible** : `num` (convertie en binaire : 0 = sain, 1 = malade)
 - **Colonnes numériques** : `age`, `trestbps`, `chol`, `thalch`, `oldpeak`
 - **Colonnes catégorielles** : `sex`, `cp`, `restecg`, `slope`, `thal`, `exang`, `fbs`
 
-## Stack technique
+## Structure du projet
 
-- Python 3.13 (géré par uv)
-- MLflow (tracking + registry)
-- FastAPI (API de prédiction)
-- Airflow (orchestration du ré-entraînement)
-- Docker + docker-compose
-- GitHub Actions (CI/CD)
+```
+ml-orchestration-course/
+  README.md          ce fichier
+  Makefile           commandes du projet
+  pyproject.toml     dépendances Python
+  data/              dataset CSV
+  src/mlproject/     code source à compléter séance par séance
+    config.py        configuration du projet (dataset, colonnes, MLflow)
+    data.py          chargement et préparation des données
+    features.py      construction du pré-processing
+  todo/              squelette de référence du prof (non pushé sur git)
+```
+
+## Ce qu'on a fait dans chaque fichier (S0)
+
+### `src/mlproject/config.py`
+Configure tous les paramètres du projet :
+- Le chemin vers le fichier CSV
+- La colonne cible (`num`)
+- Les colonnes numériques et catégorielles
+- Le nom de l'expérience MLflow
+
+### `src/mlproject/data.py`
+Charge le CSV et prépare les données :
+- Lit le fichier `heart_disease_uci.csv`
+- **Convertit la colonne `num` en binaire** : 0 reste 0, toute valeur > 0 devient 1
+- Découpe les données en train/test (80% / 20%)
+
+### `src/mlproject/features.py`
+Dans le fichier features.py on effectue la normalisation des variables numériques et l'encodage des variables catégorielles 
+- **Colonnes numériques** → StandardScaler (normalisation)
+- **Colonnes catégorielles** → OneHotEncoder (encodage)
+
+## Installation
+
+```bash
+make install
+export PYTHONPATH=src
+```
+
+## Commandes disponibles
+
+```bash
+make help          # liste toutes les commandes
+make install       # installe les dépendances
+make data          # vérifie que le dataset est en place
+make train         # entraîne le modèle 
+make train-optuna  # optimisation Optuna 
+make train-models  # comparaison de modèles + SHAP 
+make api           # lance l'API FastAPI 
+make frontend      # lance le frontend Streamlit 
+make docker-up     # démarre toute la stack Docker 
+```
 
 ## Feuille de route
 
@@ -38,10 +85,3 @@ Prédire cette cible est utile pour aider les médecins à identifier rapidement
 | S12 | FastAPI | Exposer le modèle via une API | ⬜ |
 | S14 | Docker Compose | Orchestrer la stack | ⬜ |
 | S17 | Airflow | Planifier le ré-entraînement | ⬜ |
-
-## Installation
-
-```bash
-make -C todo install
-export PYTHONPATH=todo
-```
