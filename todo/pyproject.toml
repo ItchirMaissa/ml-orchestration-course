@@ -1,0 +1,30 @@
+[project]
+name = "heart-disease-classifier"
+version = "0.1.0"
+description = "Détection de maladie cardiaque - Projet MLOps ESGI"
+requires-python = ">=3.13"
+dependencies = [
+    "scikit-learn>=1.4",
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "mlflow>=2.12",
+    "optuna>=3.6",
+    "fastapi>=0.111",
+    "uvicorn>=0.29",
+    "streamlit>=1.34",
+    "shap>=0.45",
+    "python-dotenv>=1.0",
+    "xgboost>=2.0",
+    "lightgbm>=4.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
