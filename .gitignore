@@ -1,2 +1,6 @@
 todo/
 .DS_Store
+models/
+__pycache__/
+uv.lock
+.venv/
