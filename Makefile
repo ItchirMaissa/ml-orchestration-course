@@ -34,7 +34,7 @@ RESET  := $(shell printf '\033[0m')
 
 .PHONY: help \
         check-uv check-venv venv-create install sync deps-sync lock reset-env doctor \
-        data train train-baseline train-models train-optuna mlflow api frontend \
+        data train train-models train-optuna mlflow api frontend \
         docker-build docker-run docker-up docker-down \
         lint format type test check
 
@@ -104,11 +104,8 @@ data: ## Prepare/genere le jeu de donnees dans data/
 	# Dataset : Heart Disease UCI -> data/heart_disease_uci.csv
 	@echo "$(GREEN)[OK] Dataset heart_disease_uci.csv present dans data/$(RESET)"
 
-train-baseline: ## Entraine la baseline simple -> models/model_baseline.joblib
-	$(PYTHON) -m mlproject.train_baseline
-
-train: ## Entraine la baseline avec MLflow -> models/model.joblib (C=.. MAX_ITER=..)
-	# TODO (S5) : $(PYTHON) -m mlproject.train --c $(C) --max-iter $(MAX_ITER)
+train: ## Entraine la baseline -> models/model.joblib (C=.. MAX_ITER=..)
+	$(PYTHON) -m mlproject.train --c $(C) --max-iter $(MAX_ITER)
 
 train-models: ## Compare RF / XGBoost / LightGBM (GridSearchCV) + SHAP (CV=.. SCORING=..)
 	# TODO (S7) : $(PYTHON) -m mlproject.train_models --cv $(CV) --scoring $(SCORING)
