@@ -78,10 +78,19 @@ make docker-up     # démarre toute la stack Docker
 | Séance | TP | Objectif | Statut |
 |--------|----|----------|--------|
 | S0 | Projet personnel | Choisir dataset + configurer environnement | ✅ |
-| S5 | MLflow | Suivi d'expériences MLflow | ⬜ |
+| S5 | MLflow | Suivi d'expériences MLflow | ✅ |
 | S6 | Optuna | Optimisation Optuna + Model Registry | ⬜ |
-| S7 | AutoML + SHAP | Comparaison de modèles + explicabilité | ⬜ |
+| S7 | AutoML + SHAP | Comparaison de modèles + explicabilité | ✅ |
 | S8 | Docker | Conteneuriser l'entraînement | ⬜ |
 | S12 | FastAPI | Exposer le modèle via une API | ⬜ |
 | S14 | Docker Compose | Orchestrer la stack | ⬜ |
 | S17 | Airflow | Planifier le ré-entraînement | ⬜ |
+
+## Résultats obtenus
+
+| Modèle | f1 | roc_auc |
+|--------|----|---------|
+| Logistic Regression (baseline) | 0.856 | 0.911 |
+| Random Forest | - | - |
+| **XGBoost** ← meilleur | - | **0.926** |
+| LightGBM | - | - |
