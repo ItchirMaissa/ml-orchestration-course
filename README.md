@@ -32,7 +32,7 @@ ml-orchestration-course/
   todo/              squelette de référence du prof (non pushé sur git)
 ```
 
-## Ce qu'on a fait dans chaque fichier (S0)
+## Ce qu'on a fait dans chaque fichier
 
 ### `src/mlproject/config.py`
 Configure tous les paramètres du projet :
@@ -51,6 +51,22 @@ Charge le CSV et prépare les données :
 Dans le fichier features.py on effectue la normalisation des variables numériques et l'encodage des variables catégorielles 
 - **Colonnes numériques** → StandardScaler (normalisation)
 - **Colonnes catégorielles** → OneHotEncoder (encodage)
+
+### `src/mlproject/tracking.py` (S5)
+Centralise la configuration MLflow pour éviter la duplication dans chaque script :
+- `setup_experiment()` → configure l'URI, crée l'expérience, ajoute description et tags
+- `log_dataset()` → attache le dataset utilisé à chaque run (traçabilité données → modèle)
+
+### `src/mlproject/train.py` (S5)
+Entraîne la Logistic Regression avec suivi MLflow :
+- Utilise `setup_experiment()` et `log_dataset()` de `tracking.py`
+- Logue les paramètres (C, max_iter), les métriques (f1, roc_auc) et le modèle
+
+### `src/mlproject/train_models.py` (S7)
+Compare 3 modèles avec GridSearchCV et MLflow :
+- **Random Forest**, **XGBoost**, **LightGBM**
+- Teste plusieurs combinaisons d'hyperparamètres pour chaque modèle
+- Enregistre le meilleur (XGBoost, roc_auc=0.926) dans le Model Registry
 
 ## Installation
 

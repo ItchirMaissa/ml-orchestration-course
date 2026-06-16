@@ -113,8 +113,13 @@ train-models: ## Compare RF / XGBoost / LightGBM avec GridSearchCV + MLflow (CV=
 train-optuna: ## Optimise RF / XGBoost / LightGBM avec Optuna (N_TRIALS=.. CV=..)
 	# TODO (S6) : $(PYTHON) -m mlproject.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
 
-mlflow: ## Demarre le serveur MLflow local (sqlite)
+mlflow: ## Demarre le serveur MLflow local (sqlite) -> http://127.0.0.1:5000
 	uv run mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+
+train-mlflow: ## Lance 3 runs avec differents parametres C pour comparer dans MLflow
+	$(PYTHON) -m mlproject.train --c 0.1
+	$(PYTHON) -m mlproject.train --c 1.0
+	$(PYTHON) -m mlproject.train --c 10.0
 
 api: ## Lance l'API FastAPI en rechargement auto (voir API_HOST/API_PORT)
 	# TODO (S12) : $(RUN) uvicorn mlproject.api:app --reload --host $(API_HOST) --port $(API_PORT)

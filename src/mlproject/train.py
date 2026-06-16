@@ -10,24 +10,21 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 
-from mlproject.config import (
-    MLFLOW_EXPERIMENT,
-    MLFLOW_TRACKING_URI,
-    MODEL_DIR,
-    RANDOM_STATE,
-)
+from mlproject.config import MODEL_DIR, RANDOM_STATE
 from mlproject.data import load_data, split
 from mlproject.features import build_preprocessor
+from mlproject.tracking import log_dataset, setup_experiment
 
 
 def train(c: float = 1.0, max_iter: int = 1000):
     df = load_data()
     x_train, x_test, y_train, y_test = split(df)
 
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
-    mlflow.set_experiment(MLFLOW_EXPERIMENT)
+    setup_experiment()
 
     with mlflow.start_run(run_name=f"logreg-c{c}"):
+        log_dataset(df, context="training")
+
         model = Pipeline([
             ("preprocessor", build_preprocessor()),
             ("classifier", LogisticRegression(C=c, random_state=RANDOM_STATE, max_iter=max_iter)),
