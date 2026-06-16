@@ -367,11 +367,8 @@ def train_all(
     x_train, x_test, y_train, y_test = split(df)
 
     if use_mlflow:
-        mlflow.set_tracking_uri("sqlite:///mlflow.db")
-        mlflow.set_experiment(MLFLOW_EXPERIMENT)
-        logger.info(
-            "Suivi MLflow : %s (experience: %s)", MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT
-        )
+        from mlproject.tracking import setup_experiment, log_dataset
+        setup_experiment()
 
     results = [
         optimize_model(spec, x_train, y_train, x_test, y_test, cv=cv, scoring=scoring)
@@ -384,6 +381,7 @@ def train_all(
 
     if use_mlflow:
         with mlflow.start_run(run_name="compare-models"):
+            log_dataset(df, context="training")
             mlflow.log_param("cv", cv)
             mlflow.log_param("scoring", scoring)
             mlflow.set_tag("best_model", best.name)
