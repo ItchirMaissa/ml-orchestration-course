@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Installer les dépendances
+        run: uv sync
+        working-directory: .
+
+      - name: Vérifier la qualité du code (ruff)
+        run: uv run ruff check src/
+
+      - name: Vérifier le formatage (ruff format)
+        run: uv run ruff format --check src/
+
+      - name: Tester l'import du projet
+        run: PYTHONPATH=src uv run python -c "from mlproject.config import TARGET; from mlproject.data import load_data; from mlproject.features import build_preprocessor; print('imports OK')"
