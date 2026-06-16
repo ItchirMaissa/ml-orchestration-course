@@ -18,7 +18,7 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Installer les dépendances
-        run: uv sync --extra dev
+        run: uv sync --all-extras
         working-directory: .
 
       - name: Vérifier la qualité du code (ruff)
