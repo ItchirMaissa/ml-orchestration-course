@@ -9,6 +9,7 @@ Seance 5 - TP MLflow Tracking (suite)
     train_optuna, evaluate) peuvent appeler `setup_experiment()` au lieu de
     repeter `set_tracking_uri` + `set_experiment`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -47,11 +48,15 @@ def setup_experiment() -> None:
     client = mlflow.MlflowClient()
     if MLFLOW_EXPERIMENT_DESCRIPTION:
         client.set_experiment_tag(
-            experiment.experiment_id, "mlflow.note.content", MLFLOW_EXPERIMENT_DESCRIPTION
+            experiment.experiment_id,
+            "mlflow.note.content",
+            MLFLOW_EXPERIMENT_DESCRIPTION,
         )
     for key, value in MLFLOW_EXPERIMENT_TAGS.items():
         client.set_experiment_tag(experiment.experiment_id, key, value)
-    logger.info("MLflow configure : %s (experience: %s)", MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT)
+    logger.info(
+        "MLflow configure : %s (experience: %s)", MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT
+    )
 
 
 def log_dataset(df: pd.DataFrame, context: str, name: str = "dataset") -> None:
@@ -74,5 +79,7 @@ def log_dataset(df: pd.DataFrame, context: str, name: str = "dataset") -> None:
     name : str, optional
         Nom logique du dataset, par defaut "dataset".
     """
-    dataset = mlflow.data.from_pandas(df, source=str(DATA_PATH), targets=TARGET, name=name)
+    dataset = mlflow.data.from_pandas(
+        df, source=str(DATA_PATH), targets=TARGET, name=name
+    )
     mlflow.log_input(dataset, context=context)

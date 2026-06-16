@@ -1,4 +1,5 @@
 """Baseline : Logistic Regression avec suivi MLflow."""
+
 from __future__ import annotations
 
 import argparse
@@ -25,10 +26,17 @@ def train(c: float = 1.0, max_iter: int = 1000):
     with mlflow.start_run(run_name=f"logreg-c{c}"):
         log_dataset(df, context="training")
 
-        model = Pipeline([
-            ("preprocessor", build_preprocessor()),
-            ("classifier", LogisticRegression(C=c, random_state=RANDOM_STATE, max_iter=max_iter)),
-        ])
+        model = Pipeline(
+            [
+                ("preprocessor", build_preprocessor()),
+                (
+                    "classifier",
+                    LogisticRegression(
+                        C=c, random_state=RANDOM_STATE, max_iter=max_iter
+                    ),
+                ),
+            ]
+        )
 
         model.fit(x_train, y_train)
         y_pred = model.predict(x_test)

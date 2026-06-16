@@ -17,6 +17,7 @@ Lancement :
     python -m mlproject.train_models --cv 3 --scoring roc_auc
     python -m mlproject.train_models --no-mlflow   # desactive le suivi MLflow
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,8 +48,6 @@ from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 
 from mlproject.config import (
-    MLFLOW_EXPERIMENT,
-    MLFLOW_TRACKING_URI,
     MODEL_DIR,
     MODEL_NAME,
     RANDOM_STATE,
@@ -56,7 +55,9 @@ from mlproject.config import (
 from mlproject.data import load_data, split
 from mlproject.features import build_preprocessor
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Le ColumnTransformer renvoie un tableau numpy sans noms de colonnes lors du
@@ -110,7 +111,9 @@ def build_model_specs() -> list[ModelSpec]:
         ),
         ModelSpec(
             name="xgboost",
-            estimator=XGBClassifier(random_state=RANDOM_STATE, eval_metric="logloss", n_jobs=-1),
+            estimator=XGBClassifier(
+                random_state=RANDOM_STATE, eval_metric="logloss", n_jobs=-1
+            ),
             param_grid={
                 "clf__n_estimators": [100, 200],
                 "clf__max_depth": [3, 5],
@@ -277,7 +280,9 @@ def log_run_to_mlflow(
         mlflow.log_figure(fig, "confusion_matrix.png")
         plt.close(fig)
 
-        report_dict = cast(dict, classification_report(y_test, result.preds, output_dict=True))
+        report_dict = cast(
+            dict, classification_report(y_test, result.preds, output_dict=True)
+        )
         mlflow.log_dict(report_dict, "classification_report.json")
         report_text = cast(str, classification_report(y_test, result.preds))
         mlflow.log_text(report_text, "classification_report.txt")
@@ -287,7 +292,7 @@ def log_run_to_mlflow(
         #               (artefact "shap_summary.png")
 
         signature = infer_signature(x_test, result.best_estimator.predict(x_test))
-        model_info = mlflow.sklearn.log_model(
+        mlflow.sklearn.log_model(
             result.best_estimator,
             name="model",
             signature=signature,
@@ -368,6 +373,7 @@ def train_all(
 
     if use_mlflow:
         from mlproject.tracking import setup_experiment, log_dataset
+
         setup_experiment()
 
     results = [
@@ -387,7 +393,9 @@ def train_all(
             mlflow.set_tag("best_model", best.name)
             for result in results:
                 register_as = MODEL_NAME if result is best else None
-                log_run_to_mlflow(result, x_test, y_test, cv, scoring, register_as=register_as)
+                log_run_to_mlflow(
+                    result, x_test, y_test, cv, scoring, register_as=register_as
+                )
         logger.info("Meilleur modele enregistre dans le registry sous '%s'", MODEL_NAME)
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -400,7 +408,9 @@ def train_all(
 def main() -> None:
     """Point d'entree en ligne de commande."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cv", type=int, default=5, help="Nombre de plis de validation croisee")
+    parser.add_argument(
+        "--cv", type=int, default=5, help="Nombre de plis de validation croisee"
+    )
     parser.add_argument(
         "--scoring",
         type=str,

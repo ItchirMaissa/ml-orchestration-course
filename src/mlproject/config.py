@@ -4,6 +4,7 @@ C'est le SEUL fichier a adapter pour brancher votre propre jeu de donnees :
 data.py, features.py et les scripts d'entrainement lisent toutes leurs
 colonnes via ces constantes. Voir tp/TP_S0_projet_personnel.md.
 """
+
 from __future__ import annotations
 
 import os
@@ -25,7 +26,15 @@ TARGET = "num"
 NUMERIC_FEATURES: list[str] = ["age", "trestbps", "chol", "thalch", "oldpeak"]
 
 # TODO (S0-4) : colonnes categorielles (peut rester vide : [])
-CATEGORICAL_FEATURES: list[str] = ["sex", "cp", "restecg", "slope", "thal", "exang", "fbs"]
+CATEGORICAL_FEATURES: list[str] = [
+    "sex",
+    "cp",
+    "restecg",
+    "slope",
+    "thal",
+    "exang",
+    "fbs",
+]
 
 RANDOM_STATE = 42
 
@@ -54,7 +63,9 @@ def _parse_tags(raw: str) -> dict[str, str]:
 
 
 MLFLOW_EXPERIMENT_TAGS = _parse_tags(
-    os.getenv("MLFLOW_EXPERIMENT_TAGS", "course=mlops,dataset=heart-disease-uci,model=xgboost")
+    os.getenv(
+        "MLFLOW_EXPERIMENT_TAGS", "course=mlops,dataset=heart-disease-uci,model=xgboost"
+    )
 )
 
 # Seuils de la porte qualite (evaluate.py, TP S11)

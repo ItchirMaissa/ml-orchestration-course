@@ -14,6 +14,7 @@ Lancement :
     python -m mlproject.train_optuna --n-trials 50 --cv 3
     python -m mlproject.train_optuna --no-mlflow   # desactive le suivi MLflow
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,15 +43,15 @@ import optuna.samplers
 from sklearn.model_selection import cross_val_score
 
 from mlproject.config import (
-    MLFLOW_EXPERIMENT,
-    MLFLOW_TRACKING_URI,
     MODEL_DIR,
     MODEL_NAME,
 )
 from mlproject.data import load_data, split
 from mlproject.features import build_preprocessor
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -104,11 +105,18 @@ def build_model_specs() -> list[ModelSpec]:
             suggest_params=lambda trial: {
                 "n_estimators": trial.suggest_int("n_estimators", 100, 300),
                 "max_depth": trial.suggest_int("max_depth", 3, 10),
-                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3, log=True),
+                "learning_rate": trial.suggest_float(
+                    "learning_rate", 0.01, 0.3, log=True
+                ),
             },
             build_estimator=lambda params: cast(
                 ClassifierMixin,
-                XGBClassifier(random_state=RANDOM_STATE, eval_metric="logloss", n_jobs=-1, **params),
+                XGBClassifier(
+                    random_state=RANDOM_STATE,
+                    eval_metric="logloss",
+                    n_jobs=-1,
+                    **params,
+                ),
             ),
         ),
         ModelSpec(
@@ -116,7 +124,9 @@ def build_model_specs() -> list[ModelSpec]:
             suggest_params=lambda trial: {
                 "n_estimators": trial.suggest_int("n_estimators", 50, 300),
                 "num_leaves": trial.suggest_int("num_leaves", 15, 127),
-                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3, log=True),
+                "learning_rate": trial.suggest_float(
+                    "learning_rate", 0.01, 0.3, log=True
+                ),
                 "max_depth": trial.suggest_int("max_depth", 3, 12),
             },
             build_estimator=lambda params: cast(
@@ -194,6 +204,7 @@ def run_study(spec: ModelSpec, x_train, y_train, n_trials: int, cv: int):
         Etude Optuna une fois l'optimisation terminee.
     """
     from mlproject.config import RANDOM_STATE
+
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(
         direction="maximize",
@@ -334,7 +345,9 @@ def log_family_to_mlflow(
         mlflow.log_figure(fig, "confusion_matrix.png")
         plt.close(fig)
 
-        report_dict = cast(dict, classification_report(y_test, result.preds, output_dict=True))
+        report_dict = cast(
+            dict, classification_report(y_test, result.preds, output_dict=True)
+        )
         mlflow.log_dict(report_dict, "classification_report.json")
         report_text = cast(str, classification_report(y_test, result.preds))
         mlflow.log_text(report_text, "classification_report.txt")
@@ -391,7 +404,9 @@ def describe_registered_version(
     raise NotImplementedError
 
 
-def optimize(n_trials: int = 30, cv: int = 5, use_mlflow: bool = True) -> list[FamilyResult]:
+def optimize(
+    n_trials: int = 30, cv: int = 5, use_mlflow: bool = True
+) -> list[FamilyResult]:
     """Optimiser RF / XGBoost / LightGBM avec Optuna et sauvegarder le meilleur.
 
     Le meilleur modele (selon le ROC AUC de test) est persiste dans
@@ -419,16 +434,21 @@ def optimize(n_trials: int = 30, cv: int = 5, use_mlflow: bool = True) -> list[F
 
     if use_mlflow:
         from mlproject.tracking import setup_experiment, log_dataset
+
         setup_experiment()
 
     results = [
-        optimize_family(spec, x_train, y_train, x_test, y_test, n_trials=n_trials, cv=cv)
+        optimize_family(
+            spec, x_train, y_train, x_test, y_test, n_trials=n_trials, cv=cv
+        )
         for spec in build_model_specs()
     ]
     results.sort(key=lambda r: r.test_roc_auc, reverse=True)
 
     best = results[0]
-    logger.info("Meilleure famille : %s (test_roc_auc=%.3f)", best.spec.name, best.test_roc_auc)
+    logger.info(
+        "Meilleure famille : %s (test_roc_auc=%.3f)", best.spec.name, best.test_roc_auc
+    )
 
     if use_mlflow:
         with mlflow.start_run(run_name="optuna-compare"):
@@ -454,9 +474,14 @@ def main() -> None:
     """Point d'entree en ligne de commande."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--n-trials", type=int, default=30, help="Nombre d'essais Optuna par famille de modeles"
+        "--n-trials",
+        type=int,
+        default=30,
+        help="Nombre d'essais Optuna par famille de modeles",
     )
-    parser.add_argument("--cv", type=int, default=5, help="Nombre de plis de validation croisee")
+    parser.add_argument(
+        "--cv", type=int, default=5, help="Nombre de plis de validation croisee"
+    )
     parser.add_argument(
         "--no-mlflow",
         dest="use_mlflow",

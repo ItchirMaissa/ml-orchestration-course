@@ -1,4 +1,5 @@
 """Chargement et decoupage des donnees."""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -16,4 +17,6 @@ def load_data(path=DATA_PATH) -> pd.DataFrame:
 def split(df: pd.DataFrame, test_size: float = 0.2):
     X = df.drop(columns=[TARGET])
     y = df[TARGET]
-    return train_test_split(X, y, test_size=test_size, stratify=y, random_state=RANDOM_STATE)
+    return train_test_split(
+        X, y, test_size=test_size, stratify=y, random_state=RANDOM_STATE
+    )

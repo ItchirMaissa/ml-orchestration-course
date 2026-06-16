@@ -15,6 +15,7 @@ Lancement :
     python -m mlproject.evaluate --model-uri models:/classifier/1
     python -m mlproject.evaluate --no-validate         # evalue sans porte qualite
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,14 +31,14 @@ from mlproject.config import (
     DATA_PATH,
     EVAL_F1_MIN,
     EVAL_ROC_AUC_MIN,
-    MLFLOW_EXPERIMENT,
-    MLFLOW_TRACKING_URI,
     MODEL_NAME,
     TARGET,
 )
 from mlproject.data import load_data, split
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -103,19 +104,29 @@ def evaluate_model(model_uri: str | None = None, validate: bool = True):
     eval_df[TARGET] = y_test.values
 
     from mlproject.tracking import setup_experiment
+
     setup_experiment()
     model_uri = model_uri or latest_model_uri()
     logger.info("Evaluation de %s", model_uri)
 
     with mlflow.start_run(run_name="evaluate"):
-        dataset = mlflow.data.from_pandas(eval_df, source=str(DATA_PATH), targets=TARGET, name="eval")
+        dataset = mlflow.data.from_pandas(
+            eval_df, source=str(DATA_PATH), targets=TARGET, name="eval"
+        )
         mlflow.log_input(dataset, context="evaluation")
 
         result = mlflow.models.evaluate(
-            model_uri, data=eval_df, targets=TARGET,
-            model_type="classifier", evaluators=["default"]
+            model_uri,
+            data=eval_df,
+            targets=TARGET,
+            model_type="classifier",
+            evaluators=["default"],
         )
-        logger.info("f1_score=%.3f roc_auc=%.3f", result.metrics["f1_score"], result.metrics["roc_auc"])
+        logger.info(
+            "f1_score=%.3f roc_auc=%.3f",
+            result.metrics["f1_score"],
+            result.metrics["roc_auc"],
+        )
 
         if validate:
             mlflow.validate_evaluation_results(build_thresholds(), result)

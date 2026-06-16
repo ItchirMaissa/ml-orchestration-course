@@ -4,6 +4,7 @@ Séance 12 - TP FastAPI
     Expose /health, /predict et /model-info pour le modèle Heart Disease UCI.
     Lancement : `uvicorn mlproject.api:app --reload`
 """
+
 from __future__ import annotations
 
 import logging
@@ -18,7 +19,9 @@ from pydantic import BaseModel, Field
 
 from mlproject.config import MODEL_DIR
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 ml: dict = {}
@@ -46,9 +49,13 @@ app = FastAPI(
 class Features(BaseModel):
     # Colonnes numériques
     age: float = Field(..., ge=0, description="Âge du patient")
-    trestbps: float = Field(..., ge=0, description="Pression artérielle au repos (mm Hg)")
+    trestbps: float = Field(
+        ..., ge=0, description="Pression artérielle au repos (mm Hg)"
+    )
     chol: float = Field(..., ge=0, description="Cholestérol sérique (mg/dl)")
-    thalch: float = Field(..., ge=0, description="Fréquence cardiaque maximale atteinte")
+    thalch: float = Field(
+        ..., ge=0, description="Fréquence cardiaque maximale atteinte"
+    )
     oldpeak: float = Field(..., description="Dépression ST induite par l'exercice")
     # Colonnes catégorielles (None possible dans le dataset pour slope et thal)
     sex: str | None = Field(None, description="Sexe : Male / Female")
