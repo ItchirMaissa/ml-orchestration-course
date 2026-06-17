@@ -1,0 +1,25 @@
+# Conteneurisation de l'entraînement - Heart Disease Classifier
+# Build : docker build -f docker/Dockerfile.train -t mlproject-train .
+# Run   : docker run --rm -v "$PWD/models:/app/models" mlproject-train
+
+# S8-1 : image de base Python 3.13 slim
+FROM python:3.13-slim
+
+# S8-2 : variables d'environnement et dossier de travail
+ENV PYTHONUNBUFFERED=1 PYTHONPATH=/app/src
+WORKDIR /app
+
+# libgomp1 : runtime OpenMP requis par LightGBM
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# S8-3 : copier pyproject.toml en premier pour profiter du cache de layers
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir .
+
+# S8-4 : copier le code source
+COPY src/ ./src/
+
+# S8-5 : copier les données et définir la commande par défaut
+COPY data/ ./data/
+CMD ["python", "-m", "mlproject.train"]
