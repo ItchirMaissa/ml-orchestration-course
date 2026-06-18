@@ -118,10 +118,10 @@ with st.sidebar:
 api_url = st.text_input("🔌 URL de l'API", value=API_URL)
 
 # ─── TABS ─────────────────────────────────────────────────────────────────────
-predict_tab, eval_tab, info_tab = st.tabs([
-    "🔬 Prédiction",
-    "📊 Évaluation du modèle",
+info_tab, eval_tab, predict_tab = st.tabs([
     "📖 À propos",
+    "📊 Évaluation du modèle",
+    "🔬 Prédiction",
 ])
 
 # ═══════════════════════════════════════════════════════════════════════════════
