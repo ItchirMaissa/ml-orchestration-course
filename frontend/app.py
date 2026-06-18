@@ -21,14 +21,11 @@ with st.sidebar:
     st.markdown(f"""
     | Service | Lien |
     |---|---|
-    | 🫀 Frontend | [localhost:8501](http://localhost:8501) |
-    | ⚡ API docs | [:{8000}/docs](http://{VPS_IP}:8000/docs) |
-    | 📊 MLflow | [:{5001}](http://{VPS_IP}:5001) |
-    | 🌀 Airflow | [:{8080}](http://{VPS_IP}:8080) |
+    | 🫀 Frontend | [:{VPS_IP}:8501](http://{VPS_IP}:8501) |
+    | ⚡ API docs | [:{VPS_IP}:8000/docs](http://{VPS_IP}:8000/docs) |
+    | 📊 MLflow | [:{VPS_IP}:5001](http://{VPS_IP}:5001) |
+    | 🌀 Airflow | [:{VPS_IP}:8080](http://{VPS_IP}:8080) |
     """)
-    st.divider()
-    st.markdown("**Identifiants Airflow**")
-    st.code("login : admin\npassword : airflow")
     st.divider()
     st.caption("Cours MLOps — ESGI 2025/2026")
 
