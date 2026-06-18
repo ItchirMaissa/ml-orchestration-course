@@ -55,6 +55,7 @@ def train(c: float = 1.0, max_iter: int = 1000):
 
     MODEL_DIR.mkdir(exist_ok=True)
     joblib.dump(model, MODEL_DIR / "model.joblib")
+    return {"f1": f1, "roc_auc": roc_auc}
 
 
 def main():

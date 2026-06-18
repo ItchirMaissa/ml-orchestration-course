@@ -67,6 +67,30 @@ services:
       api:
         condition: service_healthy
 
+  airflow:
+    image: apache/airflow:2.9.1
+    command: standalone
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: "mlops-esgi-secret"
+      PYTHONPATH: /opt/airflow/src
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - models_data:/opt/airflow/models
+      - airflow_data:/opt/airflow
+    depends_on:
+      api:
+        condition: service_healthy
+    profiles:
+      - airflow
+
 volumes:
   mlflow_data:
   models_data:
+  airflow_data:
