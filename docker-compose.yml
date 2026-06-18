@@ -16,7 +16,6 @@ services:
       --backend-store-uri sqlite:////mlflow/mlflow.db
       --artifacts-destination /mlflow/artifacts
       --serve-artifacts
-      --allowed-hosts "*"
     environment:
       MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD: "true"
       MLFLOW__SECURITY__ENABLE_SECURITY: "false"
