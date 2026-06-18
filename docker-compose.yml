@@ -17,6 +17,7 @@ services:
       --artifacts-destination /mlflow/artifacts
       --serve-artifacts
       --allowed-hosts "*"
+      --dev
     ports:
       - "5001:5000"
     volumes:
