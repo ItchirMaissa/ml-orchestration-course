@@ -111,7 +111,7 @@ train-models: ## Compare RF / XGBoost / LightGBM avec GridSearchCV + MLflow (CV=
 	$(PYTHON) -m mlproject.train_models --cv $(CV) --scoring $(SCORING)
 
 train-optuna: ## Optimise RF / XGBoost / LightGBM avec Optuna (N_TRIALS=.. CV=..)
-	# TODO (S6) : $(PYTHON) -m mlproject.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
+	$(PYTHON) -m mlproject.train_optuna --n-trials $(N_TRIALS) --cv $(CV)
 
 mlflow: ## Demarre le serveur MLflow local (sqlite) -> http://127.0.0.1:5000
 	uv run mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
@@ -122,43 +122,54 @@ train-mlflow: ## Lance 3 runs avec differents parametres C pour comparer dans ML
 	$(PYTHON) -m mlproject.train --c 10.0
 
 api: ## Lance l'API FastAPI en rechargement auto (voir API_HOST/API_PORT)
-	# TODO (S12) : $(RUN) uvicorn mlproject.api:app --reload --host $(API_HOST) --port $(API_PORT)
+	$(RUN) uvicorn mlproject.api:app --reload --host $(API_HOST) --port $(API_PORT)
 
 frontend: ## Lance le frontend Streamlit (voir FRONTEND_PORT, API_URL)
-	# TODO (S14bis) : $(RUN) streamlit run frontend/app.py --server.port $(FRONTEND_PORT)
+	$(RUN) streamlit run frontend/app.py --server.port $(FRONTEND_PORT)
 
 
 # ==============================================================================
-# Docker  [A COMPLETER]
+# Docker
 # ==============================================================================
 
-docker-build: ## Construit l'image d'entrainement
-	# TODO (S8) : docker build -f docker/Dockerfile.train -t mlproject-train .
+docker-build: ## Construit les images Docker (train, api, frontend)
+	docker build -f docker/Dockerfile.train -t mlproject-train .
+	docker build -f docker/Dockerfile.api -t mlproject-api .
+	docker build -f docker/Dockerfile.frontend -t mlproject-frontend .
 
 docker-run: ## Lance l'entrainement en conteneur
-	# TODO (S8) : docker run --rm -v "$(CURDIR)/../models:/app/models" mlproject-train
+	docker run --rm -v "$(CURDIR)/models:/app/models" mlproject-train
 
-docker-up: ## Demarre la stack (mlflow, api, frontend)
-	# TODO (S14) : docker compose -f docker-compose.yml up -d --build mlflow api frontend
+docker-up: ## Demarre la stack complete (mlflow, api, frontend)
+	docker compose up -d --build mlflow api frontend
 
 docker-down: ## Arrete et supprime les conteneurs (conserve les volumes)
-	# TODO (S14) : docker compose -f docker-compose.yml down
+	docker compose down
+
+docker-train: ## Entraine le modele via Docker Compose
+	docker compose --profile train run --rm train
+
+airflow-up: ## Demarre Airflow (interface sur http://localhost:8080)
+	docker compose --profile airflow up -d airflow
+
+airflow-down: ## Arrete Airflow
+	docker compose --profile airflow down
 
 
 # ==============================================================================
-# Qualite  [A COMPLETER]
+# Qualite
 # ==============================================================================
 
 lint: ## Verifie le style (ruff)
-	# TODO : $(RUN) ruff check mlproject
+	$(RUN) ruff check src/
 
 format: ## Formate le code (ruff)
-	# TODO : $(RUN) ruff format mlproject
+	$(RUN) ruff format src/
 
 type: ## Verifie les types (mypy)
-	# TODO : $(RUN) mypy mlproject
+	$(RUN) mypy src/
 
 test: ## Lance les tests (pytest)
-	# TODO : $(RUN) pytest
+	$(RUN) pytest
 
 check: lint type test ## Workflow qualite complet (lint + types + tests)
