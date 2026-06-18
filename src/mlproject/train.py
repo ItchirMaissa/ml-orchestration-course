@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 
 import joblib
 import mlflow
@@ -47,9 +48,10 @@ def train(c: float = 1.0, max_iter: int = 1000):
 
         mlflow.log_params({"c": c, "max_iter": max_iter, "model": "logreg"})
         mlflow.log_metrics({"f1": f1, "roc_auc": roc_auc})
-        mlflow.sklearn.log_model(
-            model, name="model", skops_trusted_types=["numpy.dtype"]
-        )
+        if not os.environ.get("CI"):
+            mlflow.sklearn.log_model(
+                model, name="model", skops_trusted_types=["numpy.dtype"]
+            )
 
         print(f"f1={f1:.3f}  roc_auc={roc_auc:.3f}")
 
