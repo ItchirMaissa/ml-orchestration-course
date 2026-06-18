@@ -31,18 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def setup_experiment() -> None:
-    """Configurer le tracking MLflow et les metadonnees de l'experience.
-
-    A implementer :
-    - pointer vers `MLFLOW_TRACKING_URI` (mlflow.set_tracking_uri)
-    - selectionner (ou creer) l'experience `MLFLOW_EXPERIMENT`
-      (mlflow.set_experiment, qui renvoie un objet Experiment)
-    - appliquer la description (tag special `mlflow.note.content`) et les tags
-      `MLFLOW_EXPERIMENT_TAGS` a l'experience, via un `mlflow.MlflowClient()`
-      et `client.set_experiment_tag(experiment_id, key, value)`.
-
-    L'operation doit etre idempotente (re-appelable sans erreur).
-    """
+    """Configurer le tracking MLflow et les metadonnees de l'experience."""
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     experiment = mlflow.set_experiment(MLFLOW_EXPERIMENT)
     client = mlflow.MlflowClient()
@@ -60,26 +49,8 @@ def setup_experiment() -> None:
 
 
 def log_dataset(df: pd.DataFrame, context: str, name: str = "dataset") -> None:
-    """Logger un dataset MLflow dans le run courant (tracabilite donnees -> modele).
-
-    Rattache au run la source des donnees, le schema et un profil, visibles
-    dans l'onglet "Datasets" de l'UI MLflow.
-
-    A implementer :
-    - construire un dataset MLflow a partir du DataFrame :
-      `mlflow.data.from_pandas(df, source=str(DATA_PATH), targets=TARGET, name=name)`
-    - le logger dans le run courant avec `mlflow.log_input(dataset, context=context)`
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Donnees a referencer (features + cible).
-    context : str
-        Role du dataset dans le run, par exemple "training" ou "evaluation".
-    name : str, optional
-        Nom logique du dataset, par defaut "dataset".
-    """
+    """Logger un dataset MLflow dans le run courant (tracabilite donnees -> modele)."""
     dataset = mlflow.data.from_pandas(
-        df, source=str(DATA_PATH.name), targets=TARGET, name=name
+        df, source=DATA_PATH.name, targets=TARGET, name=name
     )
     mlflow.log_input(dataset, context=context)

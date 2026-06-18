@@ -69,7 +69,7 @@ jobs:
       - name: Entraînement de la baseline
         run: PYTHONPATH=src uv run python -m mlproject.train
         env:
-          MLFLOW_TRACKING_URI: sqlite:///mlflow.db
+          MLFLOW_TRACKING_URI: sqlite:///${{ github.workspace }}/mlflow.db
 
       - name: Publication du modèle en artefact
         uses: actions/upload-artifact@v4
