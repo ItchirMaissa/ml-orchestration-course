@@ -78,13 +78,16 @@ services:
 
   airflow:
     image: apache/airflow:2.9.1
-    command: standalone
+    command: >
+      bash -c "pip install --quiet scikit-learn joblib mlflow pandas &&
+               airflow standalone"
     environment:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__WEBSERVER__SECRET_KEY: "mlops-esgi-secret"
       PYTHONPATH: /opt/airflow/src
+      MLFLOW_TRACKING_URI: http://mlflow:5000
     ports:
       - "8080:8080"
     volumes:
@@ -94,8 +97,7 @@ services:
       - models_data:/opt/airflow/models
       - airflow_data:/opt/airflow
     depends_on:
-      api:
-        condition: service_healthy
+      - mlflow
     profiles:
       - airflow
 
