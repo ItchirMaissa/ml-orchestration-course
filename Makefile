@@ -173,3 +173,15 @@ test: ## Lance les tests (pytest)
 	$(RUN) pytest
 
 check: lint type test ## Workflow qualite complet (lint + types + tests)
+
+ci: ## Teste tout : lint + format + train + api health check
+	@echo "$(CYAN)========== CI LOCAL — ITCHIR Maissa ==========$(RESET)"
+	@echo "$(YELLOW)>> 1/4 Lint...$(RESET)"
+	@$(RUN) ruff check src/ && echo "$(GREEN)[OK] Lint$(RESET)"
+	@echo "$(YELLOW)>> 2/4 Format...$(RESET)"
+	@$(RUN) ruff format --check src/ && echo "$(GREEN)[OK] Format$(RESET)"
+	@echo "$(YELLOW)>> 3/4 Entraînement baseline...$(RESET)"
+	@$(PYTHON) -m mlproject.train --c 1.0 && echo "$(GREEN)[OK] Train$(RESET)"
+	@echo "$(YELLOW)>> 4/4 Vérification modèle...$(RESET)"
+	@test -f models/model.joblib && echo "$(GREEN)[OK] models/model.joblib présent$(RESET)" || (echo "$(RED)[ERREUR] model.joblib manquant$(RESET)" && exit 1)
+	@echo "$(GREEN)========== TOUT EST OK ==========$(RESET)"
