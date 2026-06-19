@@ -48,7 +48,7 @@ def train(c: float = 1.0, max_iter: int = 1000):
 
         mlflow.log_params({"c": c, "max_iter": max_iter, "model": "logreg"})
         mlflow.log_metrics({"f1": f1, "roc_auc": roc_auc})
-        if not os.environ.get("CI"):
+        if not os.environ.get("CI") and not os.environ.get("AIRFLOW_HOME"):
             mlflow.sklearn.log_model(
                 model, name="model", skops_trusted_types=["numpy.dtype"]
             )
